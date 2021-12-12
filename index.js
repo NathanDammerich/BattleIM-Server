@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
+import dotenv from "dotenv";
 
 import gameRoutes from "./routes/games.js";
 import teamRoutes from "./routes/teams.js";
@@ -13,6 +14,7 @@ import divisionRoutes from "./routes/divisions.js";
 import quizRoutes from "./routes/quizzes.js";
 
 const app = express();
+dotenv.config();
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
@@ -27,8 +29,7 @@ app.use("/sports", sportRoutes);
 app.use("/divisions", divisionRoutes);
 app.use("/quizzes", quizRoutes);
 
-const CONNECTION_URL =
-  "mongodb+srv://natedammerich:Redbirds15@cluster0.hwuho.mongodb.net/BattleIM?retryWrites=true&w=majority";
+const CONNECTION_URL = process.env.CONNECTION_URL;
 const PORT = process.env.PORT || 5000;
 
 mongoose
