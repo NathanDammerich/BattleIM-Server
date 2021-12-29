@@ -10,7 +10,30 @@ export const getLeague = async (req, res) => {
     const league = await League.findById(id)
       .populate("sport")
       .populate("org")
-      .populate("divisions");
+      .populate({
+        path: "divisions",
+        populate: {
+          path: "teams",
+          populate: {
+            path: "wins losses",
+          },
+        },
+      })
+      .lean();
+    const teamsArray = [];
+    for (let division of league.divisions) {
+      for (let team of division.teams) {
+        console.log(team);
+        teamsArray.push(team);
+      }
+    }
+    teamsArray.sort((a, b) =>
+      (a.wins * 1.0) / (a.wins + a.losses) >
+      (b.wins * 1.0) / (b.wins + b.losses)
+        ? -1
+        : 1
+    );
+    league.teams = teamsArray;
 
     res.status(200).json(league);
   } catch (error) {

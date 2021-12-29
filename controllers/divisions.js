@@ -8,7 +8,10 @@ export const getDivision = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const division = await Division.findById(id);
+    const division = await Division.findById(id).populate({
+      path: "league",
+      populate: { path: "sport" },
+    });
     res.status(200).json(division);
   } catch (error) {
     res.status(404).json({ message: error.message });

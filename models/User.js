@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const userSchema = Schema({
   name: String,
   male: Boolean,
+  email: String,
   teams: [{ type: Schema.Types.ObjectId, ref: "Team" }],
   orgs: [{ type: Schema.Types.ObjectId, ref: "Org" }],
   invites: {

@@ -5,10 +5,12 @@ import {
   getGame,
   updateGame,
   createGame,
+  getUpcomingGames,
 } from "../controllers/games.js";
 
 const router = express.Router();
 
+router.post("/upcoming", getUpcomingGames);
 router.get("/", getGames);
 router.get("/:id", getGame);
 router.patch("/:id", updateGame);
