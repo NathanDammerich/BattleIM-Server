@@ -1,6 +1,6 @@
 import express from "express";
 
-import League from "../models/league.js";
+import League from "../models/League.js";
 
 const router = express.Router();
 
