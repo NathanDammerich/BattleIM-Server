@@ -12,6 +12,7 @@ import sportRoutes from "./routes/sports.js";
 import userRoutes from "./routes/users.js";
 import divisionRoutes from "./routes/divisions.js";
 import quizRoutes from "./routes/quizzes.js";
+import adminRoutes from "./routes/admins.js";
 
 const app = express();
 dotenv.config();
@@ -28,6 +29,7 @@ app.use("/orgs", orgRoutes);
 app.use("/sports", sportRoutes);
 app.use("/divisions", divisionRoutes);
 app.use("/quizzes", quizRoutes);
+app.use("/admins", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("BattleIM");

@@ -21,6 +21,51 @@ export const getOrg = async (req, res) => {
   }
 };
 
+export const getGamesOnDate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isoDate } = req.body;
+    const date = new Date(isoDate);
+    const org = await Org.findById(id)
+      .populate({
+        path: "sports",
+        populate: {
+          path: "leagues",
+          populate: {
+            path: "divisions",
+            populate: {
+              path: "games",
+              populate: "homeTeam awayTeam",
+            },
+          },
+        },
+      })
+      .lean();
+
+    const games = [];
+    for (let sport of org.sports) {
+      for (let league of sport.leagues) {
+        for (let division of league.divisions) {
+          for (let game of division.games) {
+            const gameDate = new Date(game.date);
+            if (
+              gameDate.getDate() === date.getDate() &&
+              gameDate.getMonth() === date.getMonth() &&
+              gameDate.getFullYear() === date.getFullYear()
+            ) {
+              games.push(game);
+            }
+          }
+        }
+      }
+    }
+
+    res.status(200).json(games);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 export const updateOrg = async (req, res) => {
   try {
     const { id } = req.params;
