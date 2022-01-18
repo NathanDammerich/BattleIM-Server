@@ -8,10 +8,10 @@ const gameSchema = Schema({
   location: String,
   date: { type: Schema.Types.Date },
   results: {
-    winner: { type: Schema.Types.ObjectId, ref: "Team" },
-    loser: { type: Schema.Types.ObjectId, ref: "Team" },
-    homeScore: Number,
-    awayScore: Number,
+    winningTeam: { type: Schema.Types.ObjectId, ref: "Team" },
+    losingTeam: { type: Schema.Types.ObjectId, ref: "Team" },
+    winningScore: Number,
+    losingScore: Number,
   },
 });
 
