@@ -22,9 +22,11 @@ export const getOrg = async (req, res) => {
 };
 
 export const getGamesOnDate = async (req, res) => {
+  console.log("getGamesOnDate called");
   try {
     const { id } = req.params;
     const { isoDate } = req.body;
+
     const date = new Date(isoDate);
     const org = await Org.findById(id)
       .populate({

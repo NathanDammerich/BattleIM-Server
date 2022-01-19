@@ -9,8 +9,8 @@ import {
 
 const router = express.Router();
 
-router.get("/:id", getOrg);
 router.post("/:id/date", getGamesOnDate);
+router.get("/:id", getOrg);
 router.patch("/:id", updateOrg);
 router.post("/", createOrg);
 
