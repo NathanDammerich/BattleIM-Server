@@ -83,6 +83,30 @@ export const getGame = async (req, res) => {
   }
 };
 
+export const postResultsOfGame = async (req, res) => {
+  console.log("postResultsOfGame called");
+  try {
+    const { id } = req.params;
+    const { results } = req.body;
+    if (
+      !results.hasOwnProperty("winningTeam") ||
+      !results.hasOwnProperty("losingTeam") ||
+      !results.hasOwnProperty("winningScore") ||
+      !results.hasOwnProperty("losingScore")
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Check format of results object" });
+    }
+    let game = await Game.findById(id).lean();
+    game.results = { ...results };
+    const updatedGame = await Game.findByIdAndUpdate(id, game, { new: true });
+    res.status(200).json(updatedGame);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 export const updateGame = async (req, res) => {
   try {
     const { id } = req.params;
