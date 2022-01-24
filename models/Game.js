@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const gameSchema = Schema({
   homeTeam: { type: Schema.Types.ObjectId, ref: "Team" },
   awayTeam: { type: Schema.Types.ObjectId, ref: "Team" },
-  league: { type: Schema.Types.ObjectId, ref: "League" },
+  leagueID: { type: Schema.Types.ObjectId, ref: "League" },
+  league: String,
   location: String,
   date: { type: Schema.Types.Date },
   results: {
