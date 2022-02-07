@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const divisionSchema = Schema({
-  timeSlot: String,
+  timeSlot: {
+    day: [String],
+    timeStart: [{ type: Schema.Types.Date }],
+    timeEnd: [{ type: Schema.Types.Date }],
+  },
   status: String,
   league: { type: Schema.Types.ObjectId, ref: "League" },
   maxTeams: Number,
