@@ -128,7 +128,7 @@ export const updateGame = async (req, res) => {
       new: true,
     })
       .populate("homeTeam")
-      .populate("opponent");
+      .populate("awayTeam");
 
     res.status(200).json(updatedGameMongoose);
   } catch (error) {
