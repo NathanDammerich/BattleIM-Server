@@ -20,9 +20,25 @@ import authRoutes from "./routes/auth.js";
 const app = express();
 dotenv.config();
 
+const whitelist = [
+  "http://localhost:3000",
+  "https://www.battleim.com",
+  "https://battleim.com",
+];
+const corsOptions = {
+  credentials: true,
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 app.use("/games", gameRoutes);
