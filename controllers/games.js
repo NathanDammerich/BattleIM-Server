@@ -110,12 +110,23 @@ export const postResultsOfGame = async (req, res) => {
 export const updateGame = async (req, res) => {
   try {
     const { id } = req.params;
-    const { homeTeam, awayTeam, league, location, date, time, results } =
-      req.body;
+    const {
+      homeTeam,
+      awayTeam,
+      homeAttendance,
+      awayAttendance,
+      league,
+      location,
+      date,
+      time,
+      results,
+    } = req.body;
 
     const updatedGame = {
       homeTeam,
       awayTeam,
+      homeAttendance,
+      awayAttendance,
       league,
       location,
       date,
@@ -138,12 +149,23 @@ export const updateGame = async (req, res) => {
 
 export const createGame = async (req, res) => {
   try {
-    const { homeTeam, awayTeam, league, location, date, time, results } =
-      req.body;
+    const {
+      homeTeam,
+      awayTeam,
+      homeAttendance,
+      awayAttendance,
+      league,
+      location,
+      date,
+      time,
+      results,
+    } = req.body;
 
     const newGame = new Game({
       homeTeam,
       awayTeam,
+      homeAttendance,
+      awayAttendance,
       league,
       location,
       date,
