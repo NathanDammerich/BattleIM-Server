@@ -6,6 +6,7 @@ dotenv.config();
 import { client } from "../redis_connect.js";
 
 import User from "../models/User.js";
+import Admin from "../models/Admin.js";
 
 export const signInUser = async (req, res) => {
   try {
@@ -59,9 +60,9 @@ export const signUpUser = async (req, res) => {
     });
 
     const token = generateAccessToken(newUser._id);
-    const refreshToken = generateRefreshToken(newUser._id);
+    const refreshToken = await generateRefreshToken(newUser._id);
 
-    res.cookie("token", token, {
+    res.cookie("accessToken", token, {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
     });
@@ -71,6 +72,75 @@ export const signUpUser = async (req, res) => {
     });
 
     return res.status(201).json({ user: newUser });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const signInAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const oldAdmin = await Admin.findOne({ email });
+
+    if (!oldAdmin) {
+      return res.status(404).json({ message: "Admin doesn't exist" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, oldAdmin.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const accessToken = generateAccessToken(oldAdmin._id);
+    const refreshToken = await generateRefreshToken(oldAdmin._id);
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 15,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+    });
+
+    return res.status(200).json({ admin: oldAdmin });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export const signUpAdmin = async (req, res) => {
+  const saltRounds = 12;
+  const { email, password, firstName, lastName } = req.body;
+
+  try {
+    const oldAdmin = await Admin.findOne({ email });
+
+    if (oldAdmin)
+      return res.status(400).json({ message: "Admin already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const newAdmin = await Admin.create({
+      email: email,
+      password: hashedPassword,
+      name: `${firstName} ${lastName}`,
+    });
+
+    const token = generateAccessToken(newAdmin._id);
+    const refreshToken = await generateRefreshToken(newAdmin._id);
+
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 15,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+    });
+
+    return res.status(201).json({ admin: newAdmin });
   } catch (error) {
     return res.status(500).json({ message: error.message });
 

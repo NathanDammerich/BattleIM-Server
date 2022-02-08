@@ -5,6 +5,8 @@ import {
   signUpUser,
   getNewToken,
   logout,
+  signInAdmin,
+  signUpAdmin,
 } from "../controllers/auth.js";
 
 import {
@@ -18,5 +20,8 @@ router.post("/signin", signInUser);
 router.post("/signup", signUpUser);
 router.post("/token", verifyRefreshToken, getNewToken);
 router.post("/logout", verifyToken, logout);
+
+router.post("/admin/signin", signInAdmin);
+router.post("/admin/signup", signUpAdmin);
 
 export default router;

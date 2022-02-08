@@ -22,6 +22,7 @@ dotenv.config();
 
 const whitelist = [
   "http://localhost:3000",
+  "http://localhost:3001",
   "https://www.battleim.com",
   "https://battleim.com",
 ];
