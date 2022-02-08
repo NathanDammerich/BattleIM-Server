@@ -14,6 +14,8 @@ const gameSchema = Schema({
     winningScore: Number,
     losingScore: Number,
   },
+  homeAttendance: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  awayAttendance: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
 
 var Game = mongoose.model("Game", gameSchema);
