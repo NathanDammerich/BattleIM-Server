@@ -12,6 +12,7 @@ const userSchema = Schema({
     user: { type: Schema.Types.ObjectId, ref: "User" },
   },
   quizzesPassed: [{ type: Schema.Types.ObjectId, ref: "Quiz" }],
+  password: String,
 });
 
 var User = mongoose.model("User", userSchema);

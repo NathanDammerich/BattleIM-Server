@@ -7,11 +7,13 @@ import {
   getGamesOnDate,
 } from "../controllers/orgs.js";
 
+import { verifyToken } from "../middleware/authenticateToken.js";
+
 const router = express.Router();
 
-router.post("/:id/date", getGamesOnDate);
-router.get("/:id", getOrg);
-router.patch("/:id", updateOrg);
-router.post("/", createOrg);
+router.post("/:id/date", verifyToken, getGamesOnDate);
+router.get("/:id", verifyToken, getOrg);
+router.patch("/:id", verifyToken, updateOrg);
+router.post("/", verifyToken, createOrg);
 
 export default router;

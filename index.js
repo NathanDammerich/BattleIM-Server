@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import { createClient } from "redis";
 
 import gameRoutes from "./routes/games.js";
 import teamRoutes from "./routes/teams.js";
@@ -13,13 +15,15 @@ import userRoutes from "./routes/users.js";
 import divisionRoutes from "./routes/divisions.js";
 import quizRoutes from "./routes/quizzes.js";
 import adminRoutes from "./routes/admins.js";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 dotenv.config();
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cookieParser());
 
 app.use("/games", gameRoutes);
 app.use("/teams", teamRoutes);
@@ -30,10 +34,24 @@ app.use("/sports", sportRoutes);
 app.use("/divisions", divisionRoutes);
 app.use("/quizzes", quizRoutes);
 app.use("/admins", adminRoutes);
+app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("BattleIM");
 });
+
+// const REDIS_URL = process.env.REDIS_URL;
+// (async () => {
+//   const client = createClient({
+//     url: REDIS_URL,
+//     socket: {
+//       tls: true,
+//       rejectUnauthorized: false,
+//     },
+//   });
+//   client.on("error", (err) => console.log(`Reids Client Error: ${err}`));
+//   await client.connect();
+// })();
 
 const CONNECTION_URL = process.env.CONNECTION_URL;
 const PORT = process.env.PORT || 5000;
