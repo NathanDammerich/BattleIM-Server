@@ -80,7 +80,7 @@ export const signUpUser = async (req, res) => {
 export const signInAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const oldAdmin = await Admin.findOne({ email });
+    const oldAdmin = await Admin.findOne({ email }).populate("org");
 
     if (!oldAdmin) {
       return res.status(404).json({ message: "Admin doesn't exist" });
@@ -92,8 +92,8 @@ export const signInAdmin = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const accessToken = generateAccessToken(oldAdmin._id);
-    const refreshToken = await generateRefreshToken(oldAdmin._id);
+    const accessToken = generateAccessTokenAdmin(oldAdmin._id);
+    const refreshToken = await generateRefreshTokenAdmin(oldAdmin._id);
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -128,8 +128,8 @@ export const signUpAdmin = async (req, res) => {
       name: `${firstName} ${lastName}`,
     });
 
-    const token = generateAccessToken(newAdmin._id);
-    const refreshToken = await generateRefreshToken(newAdmin._id);
+    const token = generateAccessTokenAdmin(newAdmin._id);
+    const refreshToken = await generateRefreshTokenAdmin(newAdmin._id);
 
     res.cookie("accessToken", token, {
       httpOnly: true,
@@ -162,6 +162,20 @@ export const logout = async (req, res) => {
   }
 };
 
+export const logoutAdmin = async (req, res) => {
+  const { adminID } = req.admin;
+  const token = req.cookies.accessToken;
+
+  try {
+    await client.del(adminID.toString());
+    await client.set("BL_" + adminID.toString(), token);
+    console.log("logoutAdmin successful");
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+};
+
 export const getNewToken = async (req, res) => {
   const { userID } = req.user;
   console.log(userID);
@@ -184,13 +198,35 @@ export const getNewToken = async (req, res) => {
   }
 };
 
+export const getNewTokenAdmin = async (req, res) => {
+  const { adminID } = req.admin;
+
+  const accessToken = generateAccessTokenAdmin(adminID);
+  const refreshToken = await generateRefreshTokenAdmin(adminID);
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 15,
+  });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  });
+  try {
+    const admin = await Admin.findById(adminID).populate("org");
+    res.status(201).json({ admin: admin });
+  } catch (error) {
+    res.sendStatus(404);
+  }
+};
+
 const generateAccessToken = (userID) => {
   return jwt.sign({ userID }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1m",
+    expiresIn: "15m",
   });
 };
 
 const generateRefreshToken = async (userID) => {
+  console.log(`userID in generateRefreshToken: ${userID}`);
   const refreshToken = jwt.sign({ userID }, process.env.REFRESH_TOKEN_SECRET);
 
   client.get(userID, (err, data) => {
@@ -200,6 +236,27 @@ const generateRefreshToken = async (userID) => {
     console.log(data);
     console.log(`userID in generateRefreshToken: ${userID}`);
     client.set(userID, JSON.stringify({ token: refreshToken }));
+  });
+
+  return refreshToken;
+};
+
+const generateAccessTokenAdmin = (adminID) => {
+  return jwt.sign({ adminID }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1m",
+  });
+};
+
+const generateRefreshTokenAdmin = async (adminID) => {
+  console.log(`adminID in generateRefreshTokenAdmin: ${adminID}`);
+  const refreshToken = jwt.sign({ adminID }, process.env.REFRESH_TOKEN_SECRET);
+
+  client.get(adminID, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+    console.log(data);
+    client.set(adminID, JSON.stringify({ token: refreshToken }));
   });
 
   return refreshToken;
