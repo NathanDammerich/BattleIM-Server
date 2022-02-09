@@ -30,11 +30,13 @@ export const signInUser = async (req, res) => {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
       sameSite: "none",
+      secure: true,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
+      secure: true,
     });
 
     return res.status(200).json({ user: oldUser });
@@ -68,11 +70,13 @@ export const signUpUser = async (req, res) => {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
       sameSite: "none",
+      secure: true,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
+      secure: true,
     });
 
     return res.status(201).json({ user: newUser });
@@ -103,11 +107,13 @@ export const signInAdmin = async (req, res) => {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
       sameSite: "none",
+      secure: true,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
+      secure: true,
     });
 
     return res.status(200).json({ admin: oldAdmin });
@@ -141,11 +147,13 @@ export const signUpAdmin = async (req, res) => {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
       sameSite: "none",
+      secure: true,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
+      secure: true,
     });
 
     return res.status(201).json({ admin: newAdmin });
@@ -194,11 +202,13 @@ export const getNewToken = async (req, res) => {
     httpOnly: true,
     maxAge: 1000 * 60 * 15,
     sameSite: "none",
+    secure: true,
   });
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 30,
     sameSite: "none",
+    secure: true,
   });
   try {
     const user = await User.findById(userID);
@@ -217,11 +227,13 @@ export const getNewTokenAdmin = async (req, res) => {
     httpOnly: true,
     maxAge: 1000 * 60 * 15,
     sameSite: "none",
+    secure: true,
   });
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 30,
     sameSite: "none",
+    secure: true,
   });
   try {
     const admin = await Admin.findById(adminID).populate("org");
