@@ -52,14 +52,15 @@ export const verifyRefreshToken = async (req, res, next) => {
   if (token == null) return res.sendStatus(401);
   try {
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
-      if (err) res.sendStatus(403);
+      if (err) return res.sendStatus(403);
       req.user = user;
 
       client.get(user.userID, async (err, data) => {
-        if (err) res.sendStatus(401).json({ message: "redis client error" });
+        if (err)
+          return res.sendStatus(401).json({ message: "redis client error" });
 
-        if (data === null) res.sendStatus(401);
-        if (JSON.parse(data).token !== token) res.sendStatus(401);
+        if (data === null) return res.sendStatus(401);
+        if (JSON.parse(data).token !== token) return res.sendStatus(401);
         next();
       });
     });
