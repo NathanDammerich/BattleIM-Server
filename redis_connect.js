@@ -8,3 +8,7 @@ export const client = new Redis(process.env.REDIS_URL, {
   },
   connectTimeout: 10000,
 });
+
+client.on("connect", () => {
+  console.log("redis connected");
+});
