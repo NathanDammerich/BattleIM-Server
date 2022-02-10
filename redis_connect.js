@@ -2,9 +2,9 @@ import Redis from "ioredis";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const client = new Redis(process.env.REDIS_URL, {
+export const client = new Redis(process.env.REDIS_TLS_URL, {
   tls: {
     rejectUnauthorized: false,
   },
-  connectTimeout: 100000,
+  connectTimeout: 10000,
 });
