@@ -12,5 +12,5 @@ dotenv.config();
 export const client = new Redis(process.env.REDIS_URL);
 
 client.on("connect", () => {
-  console.log("redis connected");
+  console.log("redis is connected");
 });
