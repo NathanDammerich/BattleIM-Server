@@ -6,4 +6,5 @@ export const client = new Redis(process.env.REDIS_URL, {
   tls: {
     rejectUnauthorized: false,
   },
+  connectTimeout: 100000,
 });
