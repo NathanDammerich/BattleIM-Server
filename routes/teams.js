@@ -9,14 +9,16 @@ import {
   addInvite,
 } from "../controllers/teams.js";
 
+import { verifyToken } from "../middleware/authenticateToken.js";
+
 const router = express.Router();
 
-router.patch("/:teamID/removePlayer", removePlayer);
-router.post("/:id/invites", addInvite);
-router.get("/:id", getTeam);
+router.patch("/:teamID/removePlayer", verifyToken, removePlayer);
+router.post("/:id/invites", verifyToken, addInvite);
+router.get("/:id", verifyToken, getTeam);
 
-router.patch("/:id", updateTeam);
-router.post("/", createTeam);
-router.post("/array", getTeamsArray);
+router.patch("/:id", verifyToken, updateTeam);
+router.post("/", verifyToken, createTeam);
+router.post("/array", verifyToken, getTeamsArray);
 
 export default router;
