@@ -4,7 +4,7 @@ import {
   getGames,
   getGame,
   updateGame,
-  createGame,
+  createGames,
   getUpcomingGames,
   postResultsOfGame,
 } from "../controllers/games.js";
@@ -15,7 +15,7 @@ router.post("/upcoming", getUpcomingGames);
 router.get("/", getGames);
 router.get("/:id", getGame);
 router.patch("/:id", updateGame);
-router.post("/", createGame);
+router.post("/", createGames);
 router.post("/:id/results", postResultsOfGame);
 
 export default router;
