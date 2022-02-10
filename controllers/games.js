@@ -160,7 +160,7 @@ export const createGames = async (req, res) => {
       throw Error("expecting array of games");
     }
     const createdGames = await Promise.all(
-      req.body.map((game = new Game(makeGameObject(game)).save()))
+      req.body.map((game) => new Game(makeGameObject(game)).save())
     );
 
     res.status(201).json(createdGames);
