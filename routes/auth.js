@@ -23,7 +23,7 @@ const router = express.Router();
 router.post("/admin/signin", signInAdmin);
 router.post("/admin/signup", signUpAdmin);
 router.post("/admin/token", verifyRefreshTokenAdmin, getNewTokenAdmin);
-router.post("/admin/logout", verifyTokenAdmin, logoutAdmin);
+router.post("/admin/logout", verifyToken, logoutAdmin);
 
 router.post("/signin", signInUser);
 router.post("/signup", signUpUser);

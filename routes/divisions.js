@@ -7,6 +7,6 @@ import { verifyToken } from "../middleware/authenticateToken.js";
 const router = express.Router();
 
 router.get("/:id", verifyToken, getDivision);
-router.post("/", createDivision);
+router.post("/", verifyToken, createDivision);
 
 export default router;

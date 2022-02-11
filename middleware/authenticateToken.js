@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import { client } from "../redis_connect.js";
 
 export const verifyToken = async (req, res, next) => {
-  console.log("verifyToken called");
   const token = req.cookies.accessToken;
   if (token == null) return res.sendStatus(401);
   try {
@@ -10,13 +9,27 @@ export const verifyToken = async (req, res, next) => {
       if (err) {
         return res.sendStatus(401);
       }
-      req.user = user;
-      client.get("BL_" + user.userID.toString(), (err, data) => {
-        if (err) throw err;
-        if (data === token)
-          return res.status(401).json({ message: "This token is blacklisted" });
-        next();
-      });
+      if (user.userID) {
+        req.user = user;
+        client.get("BL_" + user.userID.toString(), (err, data) => {
+          if (err) throw err;
+          if (data === token)
+            return res
+              .status(401)
+              .json({ message: "This token is blacklisted" });
+          next();
+        });
+      } else {
+        req.admin = user;
+        client.get("BL_" + user.adminID.toString(), (err, data) => {
+          if (err) throw err;
+          if (data === token)
+            return res
+              .status(401)
+              .json({ message: "This token is blacklisted" });
+          next();
+        });
+      }
     });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });

@@ -14,7 +14,7 @@ import {
 
 const router = express.Router();
 
-router.post("/:id/date", verifyTokenAdmin, getGamesOnDate);
+router.post("/:id/date", verifyToken, getGamesOnDate);
 router.get("/:id", verifyToken, getOrg);
 router.patch("/:id", verifyToken, updateOrg);
 router.post("/", verifyToken, createOrg);
