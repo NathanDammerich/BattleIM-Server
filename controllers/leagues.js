@@ -60,11 +60,9 @@ export const createLeague = async (req, res) => {
   try {
     const { sport, games, teams, org } = req.body;
 
-    const newLeague = new League({ sport, games, teams, org })
-      .populate("sport")
-      .populate("games")
-      .populate("teams")
-      .populate("org");
+    const newLeague = new League({ sport, games, teams, org }).populate(
+      "sport"
+    );
 
     await newLeague.save();
 
