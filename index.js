@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { createClient } from "redis";
 
 import gameRoutes from "./routes/games.js";
 import teamRoutes from "./routes/teams.js";
@@ -32,7 +31,8 @@ const corsOptions = {
     if (whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(null, true);
+      //callback(new Error("Not allowed by CORS"));
     }
   },
 };
@@ -56,19 +56,6 @@ app.use("/auth", authRoutes);
 app.get("/", (req, res) => {
   res.send("BattleIM");
 });
-
-// const REDIS_URL = process.env.REDIS_URL;
-// (async () => {
-//   const client = createClient({
-//     url: REDIS_URL,
-//     socket: {
-//       tls: true,
-//       rejectUnauthorized: false,
-//     },
-//   });
-//   client.on("error", (err) => console.log(`Reids Client Error: ${err}`));
-//   await client.connect();
-// })();
 
 const CONNECTION_URL = process.env.CONNECTION_URL;
 const PORT = process.env.PORT || 5000;

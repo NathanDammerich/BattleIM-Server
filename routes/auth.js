@@ -9,6 +9,8 @@ import {
   signUpAdmin,
   getNewTokenAdmin,
   logoutAdmin,
+  googleSignIn,
+  googleSignInAdmin,
 } from "../controllers/auth.js";
 
 import {
@@ -29,5 +31,8 @@ router.post("/signin", signInUser);
 router.post("/signup", signUpUser);
 router.post("/token", verifyRefreshToken, getNewToken);
 router.post("/logout", verifyToken, logout);
+
+router.post("/googlesignin", googleSignIn);
+router.post("/admin/googlesignin", googleSignInAdmin);
 
 export default router;

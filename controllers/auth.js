@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 import dotenv from "dotenv";
 dotenv.config();
 import { client } from "../redis_connect.js";
@@ -42,6 +43,127 @@ export const signInUser = async (req, res) => {
     return res.status(200).json({ user: oldUser });
   } catch (err) {
     return res.status(500).json({ message: err.message });
+  }
+};
+
+export const googleSignIn = async (req, res) => {
+  console.log("called googlesignin");
+  const { token } = req.body;
+  const client = new OAuth2Client(
+    "451600223630-o1sf43rnm26bg390ebu6ft3190edkdar.apps.googleusercontent.com"
+  );
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience:
+        "451600223630-o1sf43rnm26bg390ebu6ft3190edkdar.apps.googleusercontent.com",
+    });
+    const payload = ticket.getPayload();
+    const userEmail = payload.email;
+    try {
+      const user = await User.findOne({ email: userEmail });
+
+      const accessToken = generateAccessToken(user._id);
+      const refreshToken = await generateRefreshToken(user._id);
+
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 15,
+        sameSite: "none",
+        secure: true,
+      });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(200).json({ user: user, new: false });
+    } catch (error) {
+      const newUser = await User.create({
+        email: userEmail,
+        name: payload.name,
+      });
+      const accessToken = generateAccessToken(newUser._id);
+      const refreshToken = await generateRefreshToken(newUser._id);
+
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 15,
+        sameSite: "none",
+        secure: true,
+      });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(200).json({ user: newUser, new: true });
+    }
+  } catch (err) {
+    res.sendStatus(500);
+  }
+};
+
+export const googleSignInAdmin = async (req, res) => {
+  console.log("called googlesignin");
+  const { token } = req.body;
+  const client = new OAuth2Client(
+    "451600223630-o1sf43rnm26bg390ebu6ft3190edkdar.apps.googleusercontent.com"
+  );
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience:
+        "451600223630-o1sf43rnm26bg390ebu6ft3190edkdar.apps.googleusercontent.com",
+    });
+    const payload = ticket.getPayload();
+    const userEmail = payload.email;
+    try {
+      const user = await Admin.findOne({ email: userEmail });
+
+      const accessToken = generateAccessToken(user._id);
+      const refreshToken = await generateRefreshToken(user._id);
+
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 15,
+        sameSite: "none",
+        secure: true,
+      });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(200).json({ user: user, new: false });
+    } catch (error) {
+      const newUser = await Admin.create({
+        email: userEmail,
+        name: payload.name,
+        orgs: ["617f480dfec82da4aec5705c"],
+      });
+      const accessToken = generateAccessToken(newUser._id);
+      const refreshToken = await generateRefreshToken(newUser._id);
+
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 15,
+        sameSite: "none",
+        secure: true,
+      });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(200).json({ user: newUser, new: true });
+    }
+  } catch (err) {
+    res.sendStatus(500);
   }
 };
 
@@ -251,7 +373,9 @@ const generateAccessToken = (userID) => {
 
 const generateRefreshToken = async (userID) => {
   console.log(`userID in generateRefreshToken: ${userID}`);
-  const refreshToken = jwt.sign({ userID }, process.env.REFRESH_TOKEN_SECRET);
+  const refreshToken = jwt.sign({ userID }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "30d",
+  });
 
   client.get(userID, (err, data) => {
     if (err) {
@@ -267,13 +391,15 @@ const generateRefreshToken = async (userID) => {
 
 const generateAccessTokenAdmin = (adminID) => {
   return jwt.sign({ adminID }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1m",
+    expiresIn: "15m",
   });
 };
 
 const generateRefreshTokenAdmin = async (adminID) => {
   console.log(`adminID in generateRefreshTokenAdmin: ${adminID}`);
-  const refreshToken = jwt.sign({ adminID }, process.env.REFRESH_TOKEN_SECRET);
+  const refreshToken = jwt.sign({ adminID }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "30d",
+  });
 
   client.get(adminID, (err, data) => {
     if (err) {
