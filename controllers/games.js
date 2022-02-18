@@ -107,31 +107,38 @@ export const postResultsOfGame = async (req, res) => {
   }
 };
 
+const makeGameObject = (data) => {
+  const {
+    homeTeam,
+    awayTeam,
+    homeAttendance,
+    awayAttendance,
+    league,
+    location,
+    date,
+    time,
+    results,
+  } = data;
+
+  return {
+    homeTeam,
+    awayTeam,
+    homeAttendance,
+    awayAttendance,
+    league,
+    location,
+    date,
+    time,
+    results,
+  };
+};
+
 export const updateGame = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      homeTeam,
-      awayTeam,
-      league,
-      location,
-      date,
-      time,
-      results,
-      homeAttendance,
-      awayAttendance,
-    } = req.body;
 
     const updatedGame = {
-      homeTeam,
-      awayTeam,
-      league,
-      location,
-      date,
-      time,
-      results,
-      homeAttendance,
-      awayAttendance,
+      ...makeGameObject(req.body),
       _id: id,
     };
 
@@ -147,24 +154,16 @@ export const updateGame = async (req, res) => {
   }
 };
 
-export const createGame = async (req, res) => {
+export const createGames = async (req, res) => {
   try {
-    const { homeTeam, awayTeam, league, location, date, time, results } =
-      req.body;
+    if (!Array.isArray(req.body)) {
+      throw Error("expecting array of games");
+    }
+    const createdGames = await Promise.all(
+      req.body.map((game) => new Game(makeGameObject(game)).save())
+    );
 
-    const newGame = new Game({
-      homeTeam,
-      awayTeam,
-      league,
-      location,
-      date,
-      time,
-      results,
-    });
-
-    await newGame.save();
-
-    res.status(201).json(newGame);
+    res.status(201).json(createdGames);
   } catch (error) {
     res.status(409).json({ message: error });
   }

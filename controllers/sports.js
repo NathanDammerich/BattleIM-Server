@@ -46,4 +46,14 @@ export const createSport = async (req, res) => {
   }
 };
 
+export const listSports = async (_req, res) => {
+  try {
+    const sports = await Sport.find();
+
+    res.status(200).json(sports);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 export default router;
