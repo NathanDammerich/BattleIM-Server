@@ -107,7 +107,6 @@ export const googleSignIn = async (req, res) => {
 };
 
 export const googleSignInAdmin = async (req, res) => {
-  console.log("called googlesignin");
   const { token } = req.body;
   const client = new OAuth2Client(
     "451600223630-o1sf43rnm26bg390ebu6ft3190edkdar.apps.googleusercontent.com"
@@ -123,8 +122,8 @@ export const googleSignInAdmin = async (req, res) => {
     try {
       const user = await Admin.findOne({ email: userEmail });
 
-      const accessToken = generateAccessToken(user._id);
-      const refreshToken = await generateRefreshToken(user._id);
+      const accessToken = generateAccessTokenAdmin(user._id);
+      const refreshToken = await generateRefreshTokenAdmin(user._id);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -138,15 +137,15 @@ export const googleSignInAdmin = async (req, res) => {
         sameSite: "none",
         secure: true,
       });
-      res.status(200).json({ user: user, new: false });
+      res.status(200).json({ admin: user, new: false });
     } catch (error) {
       const newUser = await Admin.create({
         email: userEmail,
         name: payload.name,
         orgs: ["617f480dfec82da4aec5705c"],
       });
-      const accessToken = generateAccessToken(newUser._id);
-      const refreshToken = await generateRefreshToken(newUser._id);
+      const accessToken = generateAccessTokenAdmin(newUser._id);
+      const refreshToken = await generateRefreshTokenAdmin(newUser._id);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -160,7 +159,7 @@ export const googleSignInAdmin = async (req, res) => {
         sameSite: "none",
         secure: true,
       });
-      res.status(200).json({ user: newUser, new: true });
+      res.status(200).json({ admin: newUser, new: true });
     }
   } catch (err) {
     res.sendStatus(500);
@@ -307,7 +306,6 @@ export const logoutAdmin = async (req, res) => {
   try {
     await client.del(adminID.toString());
     await client.set("BL_" + adminID.toString(), token);
-    console.log("logoutAdmin successful");
     res.sendStatus(200);
   } catch (err) {
     res.status(500).json({ error: err });
@@ -316,7 +314,6 @@ export const logoutAdmin = async (req, res) => {
 
 export const getNewToken = async (req, res) => {
   const { userID } = req.user;
-  console.log(userID);
 
   const accessToken = generateAccessToken(userID);
   const refreshToken = await generateRefreshToken(userID);
@@ -372,7 +369,6 @@ const generateAccessToken = (userID) => {
 };
 
 const generateRefreshToken = async (userID) => {
-  console.log(`userID in generateRefreshToken: ${userID}`);
   const refreshToken = jwt.sign({ userID }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: "30d",
   });
@@ -381,8 +377,6 @@ const generateRefreshToken = async (userID) => {
     if (err) {
       console.log(err);
     }
-    console.log(data);
-    console.log(`userID in generateRefreshToken: ${userID}`);
     client.set(userID, JSON.stringify({ token: refreshToken }));
   });
 
@@ -396,16 +390,15 @@ const generateAccessTokenAdmin = (adminID) => {
 };
 
 const generateRefreshTokenAdmin = async (adminID) => {
-  console.log(`adminID in generateRefreshTokenAdmin: ${adminID}`);
   const refreshToken = jwt.sign({ adminID }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: "30d",
   });
 
   client.get(adminID, (err, data) => {
     if (err) {
+      console.log("generateRefreshTokenAdmin error");
       console.log(err);
     }
-    console.log(data);
     client.set(adminID, JSON.stringify({ token: refreshToken }));
   });
 
