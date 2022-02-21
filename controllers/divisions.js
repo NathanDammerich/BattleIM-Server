@@ -48,7 +48,7 @@ export const createDivision = async (req, res) => {
     await newDivision.save();
     await League.findByIdAndUpdate(
       {
-        _id: league,
+        _id: req.body.league,
       },
       {
         $addToSet: { divisions: newDivision._id },
