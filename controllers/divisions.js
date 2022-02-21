@@ -19,21 +19,36 @@ export const getDivision = async (req, res) => {
   }
 };
 
+const makeDivisionObject = (division) => {
+  const {
+    timeSlot = [],
+    league,
+    maxTeams = 2,
+    teams = [],
+    games = [],
+    status = "",
+  } = division;
+  return {
+    timeSlot,
+    league,
+    maxTeams,
+    teams,
+    games,
+    status,
+  };
+};
+
 export const createDivision = async (req, res) => {
   try {
-    const { timeSlot, league, maxTeams, status } = req.body;
     const newDivision = new Division({
-      timeSlot,
-      league,
-      maxTeams,
-      status,
+      ...makeDivisionObject(req.body),
       teams: [],
       games: [],
     });
     await newDivision.save();
     await League.findByIdAndUpdate(
       {
-        _id: league,
+        _id: req.body.league,
       },
       {
         $addToSet: { divisions: newDivision._id },
@@ -42,5 +57,26 @@ export const createDivision = async (req, res) => {
     res.status(200).json(newDivision);
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+export const updateDivision = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedGame = {
+      ...makeDivisionObject(req.body),
+      _id: id,
+    };
+
+    const updatedDivisionMongoose = await Division.findByIdAndUpdate(
+      id,
+      updatedGame,
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json(updatedDivisionMongoose);
+  } catch (error) {
+    res.status(409).json({ message: error.message });
   }
 };
