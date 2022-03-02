@@ -7,10 +7,7 @@ const userSchema = Schema({
   email: String,
   teams: [{ type: Schema.Types.ObjectId, ref: "Team" }],
   orgs: [{ type: Schema.Types.ObjectId, ref: "Org" }],
-  invites: {
-    team: { type: Schema.Types.ObjectId, ref: "Team" },
-    user: { type: Schema.Types.ObjectId, ref: "User" },
-  },
+  invites: [{ type: Schema.Types.ObjectId, ref: "Team" }],
   quizzesPassed: [{ type: Schema.Types.ObjectId, ref: "Quiz" }],
   password: String,
 });

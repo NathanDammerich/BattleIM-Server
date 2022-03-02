@@ -6,15 +6,15 @@ import {
   createTeam,
   getTeamsArray,
   removePlayer,
-  addInvite,
+  invitePlayer,
 } from "../controllers/teams.js";
 
 import { verifyToken } from "../middleware/authenticateToken.js";
 
 const router = express.Router();
 
-router.patch("/:teamID/removePlayer", verifyToken, removePlayer);
-router.post("/:id/invites", verifyToken, addInvite);
+router.patch("/:id/removePlayer", verifyToken, removePlayer);
+router.patch("/:id/invitePlayer", verifyToken, invitePlayer);
 router.get("/:id", verifyToken, getTeam);
 
 router.patch("/:id", verifyToken, updateTeam);

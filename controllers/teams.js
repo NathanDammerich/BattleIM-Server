@@ -69,6 +69,9 @@ export const getTeam = async (req, res) => {
       .populate("players")
       .populate("org")
       .populate("sport")
+      .populate("invites")
+      .populate("captain")
+      .populate("division")
       .lean();
 
     for (let game of team.games) {
@@ -156,6 +159,8 @@ export const getTeamsArray = async (req, res) => {
       .populate("players")
       .populate("org")
       .populate("invites")
+      .populate("captain")
+      .populate("division")
       .lean();
 
     for (let team of popTeam) {
@@ -177,23 +182,28 @@ export const getTeamsArray = async (req, res) => {
 export const removePlayer = async (req, res) => {
   console.log("removePlayer called");
   const { playerID } = req.body;
-  const { teamID } = req.params;
+  const { id } = req.params;
   try {
-    console.log(teamID);
-    const team = await Team.findById(teamID);
-
+    const team = await Team.findById(id).lean();
+    console.log();
     team.players = team.players.filter(
       (player) => String(player._id) !== String(playerID)
     );
+    team.invites = team.invites.filter(
+      (player) => String(player._id) !== String(playerID)
+    );
+    console.log("updatedTeam");
+    console.log(team);
 
-    const updatedTeam = await Team.findByIdAndUpdate(teamID, team, {
+    const updatedTeam = await Team.findByIdAndUpdate(id, team, {
       new: true,
     });
 
-    const user = await User.findById(playerID);
+    const user = await User.findById(playerID).lean();
 
-    user.teams = user.teams.filter(
-      (team) => String(team._id) !== String(teamID)
+    user.teams = user.teams.filter((team) => String(team._id) !== String(id));
+    user.invites = user.invites.filter(
+      (team) => String(team._id) !== String(id)
     );
 
     const updatedUser = await User.findByIdAndUpdate(playerID, user, {
@@ -205,17 +215,17 @@ export const removePlayer = async (req, res) => {
   }
 };
 
-export const addInvite = async (req, res) => {
+export const invitePlayer = async (req, res) => {
   const { id } = req.params;
-  const { userID, userWhoSentInviteID } = req.body;
+  const { playerID } = req.body;
   try {
     const team = await Team.findById(id);
-    team.invites.push(userID);
+    team.invites.push(playerID);
     const updatedTeam = await Team.findByIdAndUpdate(id, team, { new: true });
 
-    const user = await User.findById(userID);
-    user.invites.push({ team: id, user: userWhoSentInviteID });
-    const updatedUser = await User.findByIdAndUpdate(userID, user, {
+    const user = await User.findById(playerID);
+    user.invites.push(id);
+    const updatedUser = await User.findByIdAndUpdate(playerID, user, {
       new: true,
     });
 
