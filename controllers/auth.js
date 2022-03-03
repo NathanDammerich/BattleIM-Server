@@ -142,7 +142,7 @@ export const googleSignInAdmin = async (req, res) => {
       const newUser = await Admin.create({
         email: userEmail,
         name: payload.name,
-        orgs: ["617f480dfec82da4aec5705c"],
+        org: "617f480dfec82da4aec5705c",
       });
       const accessToken = generateAccessTokenAdmin(newUser._id);
       const refreshToken = await generateRefreshTokenAdmin(newUser._id);
