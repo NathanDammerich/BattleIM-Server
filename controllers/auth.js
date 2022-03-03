@@ -8,6 +8,7 @@ import { client } from "../redis_connect.js";
 
 import User from "../models/User.js";
 import Admin from "../models/Admin.js";
+import Org from "../models/Org.js";
 
 export const signInUser = async (req, res) => {
   try {
@@ -121,9 +122,14 @@ export const googleSignInAdmin = async (req, res) => {
     const userEmail = payload.email;
     try {
       const user = await Admin.findOne({ email: userEmail });
+      const userWithOrgPopulated = await Admin.findById(user._id).populate(
+        "org"
+      );
 
-      const accessToken = generateAccessTokenAdmin(user._id);
-      const refreshToken = await generateRefreshTokenAdmin(user._id);
+      const accessToken = generateAccessTokenAdmin(userWithOrgPopulated._id);
+      const refreshToken = await generateRefreshTokenAdmin(
+        userWithOrgPopulated._id
+      );
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -137,15 +143,20 @@ export const googleSignInAdmin = async (req, res) => {
         sameSite: "none",
         secure: true,
       });
-      res.status(200).json({ admin: user, new: false });
+      res.status(200).json({ admin: userWithOrgPopulated, new: false });
     } catch (error) {
       const newUser = await Admin.create({
         email: userEmail,
         name: payload.name,
         org: "617f480dfec82da4aec5705c",
       });
-      const accessToken = generateAccessTokenAdmin(newUser._id);
-      const refreshToken = await generateRefreshTokenAdmin(newUser._id);
+      const newUserWithOrgPopulated = await Admin.findById(
+        newUser._id
+      ).populate("org");
+      const accessToken = generateAccessTokenAdmin(newUserWithOrgPopulated._id);
+      const refreshToken = await generateRefreshTokenAdmin(
+        newUserWithOrgPopulated._id
+      );
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -159,7 +170,7 @@ export const googleSignInAdmin = async (req, res) => {
         sameSite: "none",
         secure: true,
       });
-      res.status(200).json({ admin: newUser, new: true });
+      res.status(200).json({ admin: newUserWithOrgPopulated, new: true });
     }
   } catch (err) {
     res.sendStatus(500);
