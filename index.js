@@ -24,6 +24,8 @@ const whitelist = [
   "http://localhost:3001",
   "https://www.battleim.com",
   "https://battleim.com",
+  "https://admin.battleim.com",
+  "https://www.admin.battleim.com",
 ];
 const corsOptions = {
   credentials: true,
