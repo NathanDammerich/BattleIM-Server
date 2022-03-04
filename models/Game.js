@@ -16,6 +16,7 @@ const gameSchema = Schema({
   },
   homeAttendance: [{ type: Schema.Types.ObjectId, ref: "User" }],
   awayAttendance: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  division: { type: Schema.Types.ObjectId, ref: "Division" },
 });
 
 var Game = mongoose.model("Game", gameSchema);
