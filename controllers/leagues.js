@@ -2,6 +2,8 @@ import express from "express";
 
 import League from "../models/League.js";
 
+import { deleteLeagueAction } from "./actions/deleteLeagueAction.js";
+
 const router = express.Router();
 
 export const getLeague = async (req, res) => {
@@ -83,6 +85,16 @@ export const createLeague = async (req, res) => {
     await newLeague.save();
 
     res.status(201).json(newLeague);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const deleteLeague = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteLeagueAction(id);
+    res.sendStatus(200);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

@@ -3,6 +3,8 @@ import express from "express";
 import Game from "../models/Game.js";
 import Team from "../models/Team.js";
 
+import { deleteGameAction } from "./actions/deleteGameAction.js";
+
 const router = express.Router();
 
 const daysOfWeek = [
@@ -206,6 +208,16 @@ export const getUpcomingGames = async (req, res) => {
     res.status(200).json(sortedGames);
   } catch (error) {
     res.status(404);
+  }
+};
+
+export const deleteGame = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteGameAction(id);
+    res.sendStatus(200);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
   }
 };
 

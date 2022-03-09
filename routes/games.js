@@ -7,6 +7,7 @@ import {
   createGames,
   getUpcomingGames,
   postResultsOfGame,
+  deleteGame,
 } from "../controllers/games.js";
 
 import { verifyToken } from "../middleware/authenticateToken.js";
@@ -19,5 +20,6 @@ router.get("/:id", verifyToken, getGame);
 router.patch("/:id", verifyToken, updateGame);
 router.post("/", verifyToken, createGames);
 router.post("/:id/results", verifyToken, postResultsOfGame);
+router.delete("/:id", verifyToken, deleteGame);
 
 export default router;

@@ -3,6 +3,8 @@ import express from "express";
 import Division from "../models/Division.js";
 import League from "../models/League.js";
 
+import { deleteDivisionAction } from "./actions/deleteDivisionAction.js";
+
 const router = express.Router();
 
 export const getDivision = async (req, res) => {
@@ -78,5 +80,15 @@ export const updateDivision = async (req, res) => {
     res.status(200).json(updatedDivisionMongoose);
   } catch (error) {
     res.status(409).json({ message: error.message });
+  }
+};
+
+export const deleteDivision = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteDivisionAction(id);
+    res.sendStatus(200);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
   }
 };
