@@ -84,6 +84,7 @@ export const googleSignIn = async (req, res) => {
       const newUser = await User.create({
         email: userEmail,
         name: payload.name,
+        orgs: ["617f480dfec82da4aec5705c"],
       });
       const accessToken = generateAccessToken(newUser._id);
       const refreshToken = await generateRefreshToken(newUser._id);
