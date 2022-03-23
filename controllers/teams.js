@@ -161,6 +161,7 @@ export const getTeamsArray = async (req, res) => {
       .populate("invites")
       .populate("captain")
       .populate("division")
+      .populate("sport")
       .lean();
 
     for (let team of popTeam) {
