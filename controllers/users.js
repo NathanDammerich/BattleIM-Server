@@ -50,6 +50,7 @@ export const addPassedQuiz = async (req, res) => {
     user.quizzesPassed.push(quizID);
     console.log(user);
     const newUser = await User.findByIdAndUpdate(id, user, { new: true });
+    res.status(200).json(newUser);
   } catch (error) {
     res.status(404).json(error);
   }
